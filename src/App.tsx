@@ -65,127 +65,140 @@ const exceptionStatuses: Status[] = ['BLOCKED', 'STALE', 'ESCALATED']
 const attentionStatuses = new Set<Status>(['BLOCKED', 'STALE', 'ESCALATED'])
 const completedStatuses = new Set<Status>(['WON', 'LOST', 'CLOSED'])
 
+const priorityLabels: Record<Priority, string> = {
+  CRITICAL: 'KRIITTINEN',
+  HIGH: 'KORKEA',
+  MEDIUM: 'KESKITASO',
+}
+
+const filterLabels: Record<QueueFilter, string> = {
+  ALL: 'Kaikki',
+  ATTENTION: 'Huomiota vaativat',
+  ACTIVE: 'Aktiiviset',
+  LEARNED: 'Opit',
+}
+
 const initialActions: GrowthAction[] = [
   {
     id: 'GA-001',
-    title: 'Query coverage reliability',
+    title: 'Hakukyselydatan kattavuus',
     status: 'BLOCKED',
     priority: 'CRITICAL',
     problem:
-      'Search Console query retrieval is incomplete, so the unexplained click gap should not be treated as anonymized search traffic.',
+      'Search Consolesta noudettu query-data on vajaa, joten selittämätöntä klikkieroa ei pidä tulkita anonymisoiduksi hakuliikenteeksi.',
     evidence:
-      'The latest reporting run reconciles page-level clicks but fails its query-level coverage check. Pagination completion is not yet deterministic.',
+      'Viimeisin raporttiajo täsmää sivutason klikkitiedot, mutta query-tason kattavuustarkistus epäonnistuu. Sivutuksen valmistumista ei vielä voida todentaa deterministisesti.',
     hypothesis:
-      'Fixing query coverage and validation will prevent incorrect SEO priorities.',
-    owner: 'Analytics',
-    baseline: 'Query coverage status: incomplete; fetched-click coverage: 78%',
-    target: 'Validated complete retrieval and at least 98% fetched-click coverage',
-    measures: ['Query coverage status', 'Fetched-click coverage'],
-    nextAction: 'Complete deterministic pagination and data-quality gate',
-    nextDecision: '02 Sep 2026',
-    updated: 'Today, 09:12',
+      'Query-datan kattavuuden korjaus ja validointi ehkäisevät virheellisiä SEO-priorisointeja.',
+    owner: 'Analytiikka',
+    baseline: 'Kattavuustila: vajaa; noudettujen query-rivien kattamat klikit: 78 %',
+    target: 'Kaikki API:n palautettavissa olevat näkyvät query-rivit noudettu; kattavuustila validoitu',
+    measures: ['Query-datan kattavuustila', 'Noudettujen rivien klikkikattavuus'],
+    nextAction: 'Toteuta deterministinen sivutus ja datan laatuportti',
+    nextDecision: '2.9.2026',
+    updated: 'Tänään, 09.12',
     learning: '',
     activity: [
       {
         id: 'ga001-1',
-        message: 'Coverage mismatch reproduced in the latest reporting run',
-        timestamp: 'Today, 09:12',
+        message: 'Kattavuuspoikkeama toistettiin viimeisimmässä raporttiajossa',
+        timestamp: 'Tänään, 09.12',
       },
       {
         id: 'ga001-2',
-        message: 'Action consolidated under persistent ID GA-001',
-        timestamp: '26 Aug, 15:40',
+        message: 'Havainto yhdistettiin pysyvään tunnukseen GA-001',
+        timestamp: '26.8., 15.40',
       },
     ],
   },
   {
     id: 'GA-002',
-    title: 'Talousmittari visibility experiment',
+    title: 'Talousmittarin näkyvyyskokeilu',
     status: 'ESCALATED',
     priority: 'HIGH',
     problem:
-      'A finance-metric opportunity has repeatedly appeared in reporting without being converted into an owned experiment.',
+      'Talousmittariin liittyvä mahdollisuus on noussut raporteissa toistuvasti ilman omistettua kokeilua.',
     evidence:
-      'The same opportunity appeared in three consecutive weekly reports, but no implementation owner or decision date was recorded.',
+      'Sama mahdollisuus näkyi kolmessa peräkkäisessä viikkoraportissa, mutta toteutuksen omistajaa tai päätöspäivää ei kirjattu.',
     hypothesis:
-      'Showing the relevant financial metric more prominently on selected company pages improves qualified search and report-path engagement.',
-    owner: 'Growth',
-    baseline: 'Selected pages: 3.1% CTR and 12.4 report opens per 1,000 sessions',
-    target: '+10% CTR and +15% report opens without reducing purchase conversion',
-    measures: ['CTR', 'Report opens', 'Report purchases / qualified landing sessions'],
-    nextAction: 'Approve page cohort and assign implementation capacity',
-    nextDecision: '01 Sep 2026',
-    updated: 'Yesterday, 16:05',
+      'Talousmittarin näkyvämpi esittäminen valituilla yrityssivuilla parantaa laadukkaan hakuliikenteen ja raporttipolun sitoutumista.',
+    owner: 'Kasvu',
+    baseline: 'Valitut sivut: CTR 3,1 % ja 12,4 raportin avausta / 1 000 istuntoa',
+    target: '+10 % CTR ja +15 % raportin avauksia ilman ostokonversion heikkenemistä',
+    measures: ['CTR', 'Raportin avaukset', 'Raporttiostot / laadukkaat laskeutumissessiot'],
+    nextAction: 'Hyväksy sivukohortti ja varaa toteutuskapasiteetti',
+    nextDecision: '1.9.2026',
+    updated: 'Eilen, 16.05',
     learning: '',
     activity: [
       {
         id: 'ga002-1',
-        message: 'Escalated after third report appearance without a decision',
-        timestamp: 'Yesterday, 16:05',
+        message: 'Nostettiin ESCALATED-tilaan kolmannen raportointikerran jälkeen ilman päätöstä',
+        timestamp: 'Eilen, 16.05',
       },
       {
         id: 'ga002-2',
-        message: 'Growth accepted ownership',
-        timestamp: '25 Aug, 11:20',
+        message: 'Kasvutiimi otti omistajuuden',
+        timestamp: '25.8., 11.20',
       },
     ],
   },
   {
     id: 'GA-003',
-    title: 'Modifier validation',
+    title: 'Hakumääritteiden validointi',
     status: 'MEASURING',
     priority: 'MEDIUM',
     problem:
-      'Short finance modifiers may generate false positives through substring matching.',
+      'Lyhyet talousalan hakumääritteet voivat tuottaa virheosumia osamerkkijonohaussa.',
     evidence:
-      'Manual review found finance terms embedded inside unrelated longer words in the opportunity set.',
+      'Manuaalitarkistus löysi mahdollisuusjoukosta taloustermejä osana asiaan liittymättömiä pidempiä sanoja.',
     hypothesis:
-      'Validated word-boundary modifier classification improves opportunity ranking quality.',
+      'Sanarajoihin perustuva validoitu luokittelu parantaa mahdollisuuksien priorisoinnin laatua.',
     owner: 'SEO',
-    baseline: 'Valid-match rate: 71%; qualified impressions: 42k / month',
-    target: 'At least 95% valid-match rate with stable qualified impression coverage',
-    measures: ['Valid-match rate', 'Qualified impressions', 'CTR'],
-    nextAction: 'Review the first two-week measurement cohort',
-    nextDecision: '08 Sep 2026',
-    updated: '27 Aug, 14:30',
+    baseline: 'Kelvollisten osumien osuus: 71 %; laadukkaat näyttökerrat: 42 000/kk',
+    target: 'Vähintään 95 % kelvollisia osumia ja laadukkaiden näyttökertojen määrä ennallaan',
+    measures: ['Kelvollisten osumien osuus', 'Laadukkaat näyttökerrat', 'CTR'],
+    nextAction: 'Arvioi ensimmäinen kahden viikon mittauskohortti',
+    nextDecision: '8.9.2026',
+    updated: '27.8., 14.30',
     learning: '',
     activity: [
       {
         id: 'ga003-1',
-        message: 'Measurement window started for validated classifier',
-        timestamp: '27 Aug, 14:30',
+        message: 'Validoidun luokittelijan mittausjakso käynnistyi',
+        timestamp: '27.8., 14.30',
       },
       {
         id: 'ga003-2',
-        message: 'Implementation released to the reporting workflow',
-        timestamp: '24 Aug, 10:15',
+        message: 'Toteutus julkaistiin raportointityönkulkuun',
+        timestamp: '24.8., 10.15',
       },
     ],
   },
   {
     id: 'GA-004',
-    title: 'Company page report CTA',
+    title: 'Yrityssivun raportti-CTA',
     status: 'NEW',
     priority: 'HIGH',
     problem:
-      'Company-information traffic may not consistently progress toward a paid credit-risk report.',
+      'Yritystietosivujen liikenne ei välttämättä etene johdonmukaisesti maksulliseen luottoriskiraporttiin.',
     evidence:
-      'Qualified company-page sessions show strong engagement, but the report path is visually secondary and varies by template.',
+      'Laadukkaat yrityssivuistunnot sitoutuvat hyvin, mutta raporttipolku jää visuaalisesti toissijaiseksi ja vaihtelee sivupohjittain.',
     hypothesis:
-      'A clearer context-specific report CTA increases report opens from qualified company-page sessions.',
-    owner: 'Product',
-    baseline: 'Report opens: 8.6% of qualified sessions; purchase conversion: 2.1%',
-    target: '+20% report opens while maintaining at least 2.1% purchase conversion',
-    measures: ['Report opens / qualified sessions', 'Purchase conversion'],
-    nextAction: 'Decide experiment cohort, copy, and success threshold',
-    nextDecision: '04 Sep 2026',
-    updated: '26 Aug, 12:10',
+      'Selkeä, kontekstiin sidottu raportti-CTA lisää raportin avauksia laadukkaista yrityssivuistunnoista.',
+    owner: 'Tuote',
+    baseline: 'Raportin avaukset: 8,6 % laadukkaista istunnoista; ostokonversio: 2,1 %',
+    target: '+20 % raportin avauksia, ostokonversio vähintään 2,1 %',
+    measures: ['Raportin avaukset / laadukkaat istunnot', 'Ostokonversio'],
+    nextAction: 'Päätä kokeilukohortti, teksti ja onnistumisraja',
+    nextDecision: '4.9.2026',
+    updated: '26.8., 12.10',
     learning: '',
     activity: [
       {
         id: 'ga004-1',
-        message: 'Finding promoted from observation to owned action',
-        timestamp: '26 Aug, 12:10',
+        message: 'Havainto nostettiin omistetuksi toimenpiteeksi',
+        timestamp: '26.8., 12.10',
       },
     ],
   },
@@ -198,16 +211,34 @@ function restoreActions(): GrowthAction[] {
     const saved = window.localStorage.getItem(storageKey)
     if (!saved) return initialActions
     const parsed = JSON.parse(saved) as GrowthAction[]
-    return Array.isArray(parsed) && parsed.length === initialActions.length
-      ? parsed
-      : initialActions
+    if (!Array.isArray(parsed) || parsed.length !== initialActions.length) return initialActions
+
+    return initialActions.map((action) => {
+      const persisted = parsed.find((candidate) => candidate.id === action.id)
+      if (!persisted) return action
+
+      const statusChanges = persisted.activity
+        .filter((entry) => entry.id.startsWith(`${action.id}-`))
+        .map((entry) => ({
+          ...entry,
+          message: entry.message.replace(
+            /^Status changed from (\w+) to (\w+)$/,
+            'Tila vaihdettiin: $1 → $2',
+          ),
+          timestamp: entry.timestamp === 'Just now' ? 'Juuri nyt' : entry.timestamp,
+        }))
+
+      return {
+        ...action,
+        status: persisted.status,
+        learning: persisted.learning,
+        updated: persisted.updated === 'Just now' ? 'Juuri nyt' : action.updated,
+        activity: [...statusChanges, ...action.activity],
+      }
+    })
   } catch {
     return initialActions
   }
-}
-
-function formatStatus(status: Status) {
-  return status.toLowerCase().replace('_', ' ')
 }
 
 function App() {
@@ -255,12 +286,12 @@ function App() {
         return {
           ...action,
           status,
-          updated: 'Just now',
+          updated: 'Juuri nyt',
           activity: [
             {
               id: `${action.id}-${Date.now()}`,
-              message: `Status changed from ${action.status} to ${status}`,
-              timestamp: 'Just now',
+              message: `Tila vaihdettiin: ${action.status} → ${status}`,
+              timestamp: 'Juuri nyt',
             },
             ...action.activity,
           ],
@@ -272,7 +303,7 @@ function App() {
   function updateLearning(learning: string) {
     setActions((current) =>
       current.map((action) =>
-        action.id === selected.id ? { ...action, learning, updated: 'Just now' } : action,
+        action.id === selected.id ? { ...action, learning, updated: 'Juuri nyt' } : action,
       ),
     )
   }
@@ -284,10 +315,10 @@ function App() {
   }
 
   const summaryItems = [
-    { label: 'Active experiments', value: counts.active },
-    { label: 'Needs decision', value: counts.attention },
-    { label: 'Measuring', value: counts.measuring },
-    { label: 'Completed / learned', value: counts.learned },
+    { label: 'Avoimet toimet', value: counts.active },
+    { label: 'Odottaa päätöstä', value: counts.attention },
+    { label: 'Mittauksessa', value: counts.measuring },
+    { label: 'Valmiit / opit', value: counts.learned },
   ]
 
   return (
@@ -299,23 +330,23 @@ function App() {
           </div>
           <div>
             <p className="brand-name">Luottoriskit.fi</p>
-            <h1>Growth Actions</h1>
+            <h1>Kasvutoimet</h1>
           </div>
         </div>
-        <p className="subtitle">From report findings to measurable experiments</p>
+        <p className="subtitle">Raporttihavainnoista mitattaviksi kokeiluiksi</p>
         <button
           className="icon-button"
           type="button"
           onClick={resetPrototype}
-          title="Restore mock data"
-          aria-label="Restore mock data"
+          title="Palauta esimerkkidata"
+          aria-label="Palauta esimerkkidata"
         >
           <RotateCcw size={16} />
         </button>
       </header>
 
       <main>
-        <section className="summary-grid" aria-label="Action summary">
+        <section className="summary-grid" aria-label="Toimien yhteenveto">
           {summaryItems.map((item, index) => (
             <div className="summary-item" key={item.label}>
               <span className={`summary-icon summary-icon-${index}`}>
@@ -336,13 +367,13 @@ function App() {
           <aside className="queue-panel">
             <div className="panel-heading">
               <div>
-                <p className="eyebrow">Action queue</p>
-                <h2>Priorities</h2>
+                <p className="eyebrow">Toimenpidejono</p>
+                <h2>Prioriteetit</h2>
               </div>
               <span className="queue-count">{visibleActions.length}</span>
             </div>
 
-            <div className="segmented-control" aria-label="Filter actions">
+            <div className="segmented-control" aria-label="Suodata toimenpiteitä">
               {(['ALL', 'ATTENTION', 'ACTIVE', 'LEARNED'] as QueueFilter[]).map((item) => (
                 <button
                   className={filter === item ? 'is-selected' : ''}
@@ -350,7 +381,7 @@ function App() {
                   key={item}
                   onClick={() => setFilter(item)}
                 >
-                  {item === 'ATTENTION' ? 'Attention' : item.toLowerCase()}
+                  {filterLabels[item]}
                 </button>
               ))}
             </div>
@@ -367,7 +398,7 @@ function App() {
                     <div className="card-topline">
                       <span className="action-id">{action.id}</span>
                       <span className={`priority priority-${action.priority.toLowerCase()}`}>
-                        {action.priority}
+                        {priorityLabels[action.priority]}
                       </span>
                     </div>
                     <h3>{action.title}</h3>
@@ -386,9 +417,9 @@ function App() {
               ) : (
                 <div className="empty-state">
                   <CheckCircle2 size={22} />
-                  <p>No actions in this view.</p>
+                  <p>Tässä näkymässä ei ole toimenpiteitä.</p>
                   <button type="button" onClick={() => setFilter('ALL')}>
-                    Show all actions
+                    Näytä kaikki toimenpiteet
                   </button>
                 </div>
               )}
@@ -398,11 +429,11 @@ function App() {
           <article className="detail-panel" key={selected.id}>
             <div className="detail-heading">
               <div className="detail-title">
-                <p className="eyebrow">{selected.id} · Updated {selected.updated}</p>
+                <p className="eyebrow">{selected.id} · Päivitetty {selected.updated}</p>
                 <h2>{selected.title}</h2>
                 <div className="badge-row">
                   <span className={`priority priority-${selected.priority.toLowerCase()}`}>
-                    {selected.priority}
+                    {priorityLabels[selected.priority]}
                   </span>
                   <span className={`status status-${selected.status.toLowerCase()}`}>
                     {attentionStatuses.has(selected.status) && <span className="status-dot" />}
@@ -412,20 +443,20 @@ function App() {
               </div>
 
               <label className="status-control">
-                <span>Update status</span>
+                <span>Päivitä tila</span>
                 <select
                   value={selected.status}
                   onChange={(event) => updateStatus(event.target.value as Status)}
-                  aria-label={`Update status for ${selected.title}`}
+                  aria-label={`Päivitä tila: ${selected.title}`}
                 >
-                  <optgroup label="Lifecycle">
+                  <optgroup label="Elinkaari">
                     {workflowStatuses.map((status) => (
                       <option value={status} key={status}>
                         {status}
                       </option>
                     ))}
                   </optgroup>
-                  <optgroup label="Exceptions">
+                  <optgroup label="Poikkeustilat">
                     {exceptionStatuses.map((status) => (
                       <option value={status} key={status}>
                         {status}
@@ -440,7 +471,7 @@ function App() {
               <div className={`attention-banner attention-${selected.status.toLowerCase()}`}>
                 <AlertTriangle size={18} />
                 <div>
-                  <strong>{formatStatus(selected.status)} action</strong>
+                  <strong>Tila {selected.status} vaatii toimenpiteen</strong>
                   <span>{selected.nextAction}</span>
                 </div>
               </div>
@@ -448,7 +479,7 @@ function App() {
 
             <div className="detail-body">
               <section className="narrative-section">
-                <div className="section-label">Problem & evidence</div>
+                <div className="section-label">Ongelma ja näyttö</div>
                 <p className="lead-copy">{selected.problem}</p>
                 <p className="evidence-copy">{selected.evidence}</p>
               </section>
@@ -456,7 +487,7 @@ function App() {
               <section className="hypothesis-band">
                 <Target size={19} />
                 <div>
-                  <div className="section-label">Hypothesis</div>
+                  <div className="section-label">Hypoteesi</div>
                   <p>{selected.hypothesis}</p>
                 </div>
               </section>
@@ -464,23 +495,23 @@ function App() {
               <section className="measurement-section">
                 <div className="section-header-inline">
                   <div>
-                    <div className="section-label">Measurement contract</div>
-                    <h3>Baseline to target</h3>
+                    <div className="section-label">Mittaussuunnitelma</div>
+                    <h3>Lähtötasosta tavoitteeseen</h3>
                   </div>
                   <BarChart3 size={19} />
                 </div>
                 <div className="metric-comparison">
                   <div>
-                    <span>Baseline</span>
+                    <span>Lähtötaso</span>
                     <p>{selected.baseline}</p>
                   </div>
                   <ArrowRight size={18} />
                   <div>
-                    <span>Target</span>
+                    <span>Tavoite</span>
                     <p>{selected.target}</p>
                   </div>
                 </div>
-                <div className="measure-list" aria-label="Measures">
+                <div className="measure-list" aria-label="Mittarit">
                   {selected.measures.map((measure) => (
                     <span key={measure}>{measure}</span>
                   ))}
@@ -490,22 +521,22 @@ function App() {
               <section className="decision-section">
                 <div className="section-header-inline">
                   <div>
-                    <div className="section-label">Accountability</div>
-                    <h3>Next decision</h3>
+                    <div className="section-label">Vastuu</div>
+                    <h3>Seuraava päätös</h3>
                   </div>
                   <Clock3 size={19} />
                 </div>
                 <dl className="decision-grid">
                   <div>
-                    <dt>Owner</dt>
+                    <dt>Omistaja</dt>
                     <dd>{selected.owner}</dd>
                   </div>
                   <div>
-                    <dt>Decision date</dt>
+                    <dt>Päätöspäivä</dt>
                     <dd>{selected.nextDecision}</dd>
                   </div>
                   <div className="next-action-cell">
-                    <dt>Next action</dt>
+                    <dt>Seuraava toimenpide</dt>
                     <dd>{selected.nextAction}</dd>
                   </div>
                 </dl>
@@ -514,29 +545,29 @@ function App() {
               <section className="learning-section">
                 <div className="section-header-inline">
                   <div>
-                    <div className="section-label">Result & learning</div>
-                    <h3>Reusable evidence</h3>
+                    <div className="section-label">Tulos ja oppi</div>
+                    <h3>Hyödynnettävä oppi</h3>
                   </div>
                   {completedStatuses.has(selected.status) && <CheckCircle2 size={19} />}
                 </div>
                 <label>
-                  <span className="sr-only">Learning for {selected.title}</span>
+                  <span className="sr-only">Oppi: {selected.title}</span>
                   <textarea
                     value={selected.learning}
                     onChange={(event) => updateLearning(event.target.value)}
                     placeholder={
                       completedStatuses.has(selected.status)
-                        ? 'Record what changed, the measured result, and what the team should reuse.'
-                        : 'Capture the result when a decision is made so future reports can reuse the learning.'
+                        ? 'Kirjaa muutos, mitattu tulos ja jatkossa hyödynnettävä oppi.'
+                        : 'Kirjaa tulos päätöksen jälkeen, jotta oppi säilyy seuraavaa priorisointia varten.'
                     }
                     rows={3}
                   />
                 </label>
-                <p className="autosave-note">Saved in this browser</p>
+                <p className="autosave-note">Tallennettu tähän selaimeen</p>
               </section>
 
               <section className="activity-section">
-                <div className="section-label">Recent activity</div>
+                <div className="section-label">Viimeisimmät tapahtumat</div>
                 <div className="timeline">
                   {selected.activity.slice(0, 3).map((entry) => (
                     <div className="timeline-entry" key={entry.id}>

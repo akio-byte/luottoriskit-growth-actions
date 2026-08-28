@@ -5,3 +5,5 @@ dist/
 .DS_Store
 output/playwright/
 .playwright-cli/
+.wrangler/
+.dev.vars*

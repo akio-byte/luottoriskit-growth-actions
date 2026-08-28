@@ -178,7 +178,7 @@ const initialActions: GrowthAction[] = [
   {
     id: 'GA-004',
     title: 'Yrityssivun raportti-CTA',
-    status: 'NEW',
+    status: 'WON',
     priority: 'HIGH',
     problem:
       'Yritystietosivujen liikenne ei välttämättä etene johdonmukaisesti maksulliseen luottoriskiraporttiin.',
@@ -190,11 +190,17 @@ const initialActions: GrowthAction[] = [
     baseline: 'Raportin avaukset: 8,6 % laadukkaista istunnoista; ostokonversio: 2,1 %',
     target: '+20 % raportin avauksia, ostokonversio vähintään 2,1 %',
     measures: ['Raportin avaukset / laadukkaat istunnot', 'Ostokonversio'],
-    nextAction: 'Päätä kokeilukohortti, teksti ja onnistumisraja',
-    nextDecision: '4.9.2026',
-    updated: '26.8., 12.10',
-    learning: '',
+    nextAction: 'Dokumentoi toimiva CTA-malli tulevia yrityssivukokeiluja varten',
+    nextDecision: '28.8.2026',
+    updated: 'Tänään, 11.40',
+    learning:
+      'Kontekstiin sidottu CTA lisäsi raportin avauksia 24 % ilman ostokonversion heikkenemistä.',
     activity: [
+      {
+        id: 'ga004-2',
+        message: 'Kokeilu päätettiin tilaan WON: raportin avaukset +24 %',
+        timestamp: 'Tänään, 11.40',
+      },
       {
         id: 'ga004-1',
         message: 'Havainto nostettiin omistetuksi toimenpiteeksi',
@@ -205,6 +211,13 @@ const initialActions: GrowthAction[] = [
 ]
 
 const storageKey = 'luottoriskit-growth-actions-v1'
+
+function getExceptionHeading(status: Status) {
+  if (status === 'BLOCKED') return 'Toimenpide on estynyt'
+  if (status === 'STALE') return 'Toimenpide odottaa päätöstä'
+  if (status === 'ESCALATED') return 'Toimenpide vaatii päätöksen'
+  return ''
+}
 
 function restoreActions(): GrowthAction[] {
   try {
@@ -334,15 +347,18 @@ function App() {
           </div>
         </div>
         <p className="subtitle">Raporttihavainnoista mitattaviksi kokeiluiksi</p>
-        <button
-          className="icon-button"
-          type="button"
-          onClick={resetPrototype}
-          title="Palauta esimerkkidata"
-          aria-label="Palauta esimerkkidata"
-        >
-          <RotateCcw size={16} />
-        </button>
+        <div className="header-actions">
+          <span className="demo-badge">DEMO · MOCK-DATA</span>
+          <button
+            className="icon-button"
+            type="button"
+            onClick={resetPrototype}
+            title="Palauta esimerkkidata"
+            aria-label="Palauta esimerkkidata"
+          >
+            <RotateCcw size={16} />
+          </button>
+        </div>
       </header>
 
       <main>
@@ -471,7 +487,7 @@ function App() {
               <div className={`attention-banner attention-${selected.status.toLowerCase()}`}>
                 <AlertTriangle size={18} />
                 <div>
-                  <strong>Tila {selected.status} vaatii toimenpiteen</strong>
+                  <strong>{getExceptionHeading(selected.status)}</strong>
                   <span>{selected.nextAction}</span>
                 </div>
               </div>

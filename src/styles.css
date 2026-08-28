@@ -109,8 +109,27 @@ textarea:focus-visible {
   font-size: 13px;
 }
 
-.icon-button {
+.header-actions {
   justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.demo-badge {
+  padding: 5px 7px;
+  border: 1px solid #2b3b3f;
+  border-radius: 3px;
+  color: #72858a;
+  background: #0d1214;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 8px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.icon-button {
   width: 34px;
   height: 34px;
   display: grid;
@@ -310,7 +329,10 @@ main {
 
 .action-card {
   width: 100%;
+  min-height: 144px;
   padding: 15px;
+  display: flex;
+  flex-direction: column;
   border: 1px solid transparent;
   border-radius: 5px;
   color: var(--text);
@@ -401,7 +423,8 @@ main {
 }
 
 .card-footer {
-  margin-top: 14px;
+  margin-top: auto;
+  padding-top: 14px;
 }
 
 .status {
@@ -617,7 +640,8 @@ main {
 
 .hypothesis-band p {
   color: #dce8e9;
-  font-size: 14px;
+  font-size: 15px;
+  font-weight: 500;
 }
 
 .section-header-inline {
@@ -651,6 +675,11 @@ main {
   background: #0d1214;
 }
 
+.metric-comparison > div:last-child {
+  border-color: #315052;
+  background: #0f1819;
+}
+
 .metric-comparison > svg {
   color: var(--cyan);
 }
@@ -668,6 +697,11 @@ main {
   color: #d2dcde;
   font-size: 12px;
   line-height: 1.45;
+}
+
+.metric-comparison > div:last-child p {
+  color: #e1ebec;
+  font-weight: 500;
 }
 
 .measure-list {
@@ -706,6 +740,7 @@ main {
   margin: 7px 0 0;
   color: #dbe4e6;
   font-size: 12px;
+  font-weight: 600;
   line-height: 1.4;
 }
 

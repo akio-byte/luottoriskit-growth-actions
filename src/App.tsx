@@ -284,10 +284,10 @@ function App() {
   }
 
   const summaryItems = [
-    { label: 'Active experiments', value: counts.active, filter: 'ACTIVE' as QueueFilter },
-    { label: 'Needs decision', value: counts.attention, filter: 'ATTENTION' as QueueFilter },
-    { label: 'Measuring', value: counts.measuring, filter: 'ALL' as QueueFilter },
-    { label: 'Completed / learned', value: counts.learned, filter: 'LEARNED' as QueueFilter },
+    { label: 'Active experiments', value: counts.active },
+    { label: 'Needs decision', value: counts.attention },
+    { label: 'Measuring', value: counts.measuring },
+    { label: 'Completed / learned', value: counts.learned },
   ]
 
   return (
@@ -317,12 +317,7 @@ function App() {
       <main>
         <section className="summary-grid" aria-label="Action summary">
           {summaryItems.map((item, index) => (
-            <button
-              className={`summary-item ${filter === item.filter ? 'is-active' : ''}`}
-              key={item.label}
-              type="button"
-              onClick={() => setFilter(item.filter)}
-            >
+            <div className="summary-item" key={item.label}>
               <span className={`summary-icon summary-icon-${index}`}>
                 {index === 0 && <Activity size={17} />}
                 {index === 1 && <AlertTriangle size={17} />}
@@ -333,7 +328,7 @@ function App() {
                 <strong>{item.value}</strong>
                 <small>{item.label}</small>
               </span>
-            </button>
+            </div>
           ))}
         </section>
 
